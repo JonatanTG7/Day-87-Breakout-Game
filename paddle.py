@@ -8,10 +8,12 @@ class Paddle:
         self.height = height
         self.speed = speed
         self.screen_width = screen_width
-
+    
+    #draw the paddle in the first place
     def draw(self, screen):
         pygame.draw.rect(screen, (64, 64, 64), (self.x, self.y, self.width, self.height))
 
+    #update the paddle place every time
     def update(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:

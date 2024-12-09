@@ -12,10 +12,11 @@ class Ball:
         self.color = (255, 0, 0)  
         self.rect = pygame.Rect(self.x - self.radius, self.y - self.radius, 2 * self.radius, 2 * self.radius)
 
-
+    #draw the ball
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
 
+    #move the ball and check for collision
     def update(self,paddle):
         self.x += self.speed_x
         self.y += self.speed_y
@@ -25,25 +26,28 @@ class Ball:
         if self.x - self.radius < 0 or self.x + self.radius > self.screen_width:
             self.speed_x *= -1
 
-        if self.y - self.radius < 0:
+        if self.y - self.radius < 25:
             self.speed_y *= -1
 
         if self.y + self.radius > paddle.y and self.y + self.radius < paddle.y + paddle.height:
             if self.x > paddle.x and self.x < paddle.x + paddle.width:
                 self.speed_y *= -1  
         
+    #check if the ball is out of the screen
+    def losing_life(self):
         if self.y + self.radius > self.screen_height:
-            print("Game Over!")
             self.reset()
+            return True
 
+    #collision with bricks
     def check_collision_with_bricks(self, bricks):
         for brick in bricks:
             if brick.alive and self.rect.colliderect(brick.rect):   
                 brick.alive = False 
                 self.speed_y *= -1  
-                return 1
+                return True
                 
-
+    #when ball is out of the screen
     def reset(self):
         self.x = self.screen_width // 2
         self.y = self.screen_height // 2
