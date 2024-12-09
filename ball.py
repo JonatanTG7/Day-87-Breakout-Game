@@ -32,16 +32,18 @@ class Ball:
             if self.x > paddle.x and self.x < paddle.x + paddle.width:
                 self.speed_y *= -1  
         
+
+    def losing_life(self):
         if self.y + self.radius > self.screen_height:
-            print("Game Over!")
             self.reset()
+            return True
 
     def check_collision_with_bricks(self, bricks):
         for brick in bricks:
             if brick.alive and self.rect.colliderect(brick.rect):   
                 brick.alive = False 
                 self.speed_y *= -1  
-                return 1
+                return True
                 
 
     def reset(self):

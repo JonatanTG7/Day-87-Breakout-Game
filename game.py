@@ -14,6 +14,7 @@ running  = True
 current_screen = "menu"
 clicked = False
 ball_moving = False
+game_over = False
 
 pygame.display.set_caption('Breakout Game')
 
@@ -94,7 +95,7 @@ brick_width = 95
 brick_height = 20
 horizontal_gap = 20
 vertical_gap = 20
-start_y = 100 
+start_y = 75 
 bricks = []
 
 for row in range(6): 
@@ -106,7 +107,38 @@ for row in range(6):
 
 remaining_bricks = len(bricks)
 def draw_counters():
-    draw_text(f"Remaining: {remaining_bricks}", font_button, (0,0,0),  SCREEN_WIDTH // 2, 25, center=True,bg_color_label=(192,192,192))  
+    draw_text(f"Remaining: {remaining_bricks}", font_button, (0,0,0),  100 , 25, center=True,bg_color_label=(255,255,255)) 
+
+remaining_lives = 3 
+def draw_lives():
+    draw_text(f"Lives: {remaining_lives}",font_button, (0,0,0),  800 , 25, center=True,bg_color_label=(255,255,255))
+
+def handle_life_loss(): 
+    print(f"Lives left: {remaining_lives}")
+    if remaining_lives <= 0:
+        print("Game Over!")
+        return False  
+    return True  
+
+
+def draw_game_over(screen):
+    draw_text(f"Game Over! Destroyed Bricks: {48 - remaining_bricks}", font_button ,(0,0,0),  SCREEN_WIDTH // 2 , SCREEN_HEIGHT // 2, center=True,bg_color_label=(192,192,192))
+
+
+def reset_game():
+    global remaining_bricks, remaining_lives, bricks, ball, paddle,game_over
+    remaining_lives = 3
+    game_over = False
+    bricks = []
+    for row in range(6): 
+        for col in range(8): 
+            brick_x = col * (brick_width + horizontal_gap) + 50
+            brick_y = row * (brick_height + vertical_gap) + start_y
+            brick = Brick(brick_x, brick_y, brick_width, brick_height)
+            bricks.append(brick)
+    remaining_bricks = len(bricks)
+    ball.reset()  
+    paddle.x = SCREEN_WIDTH // 2 - paddle.width // 2  
 
 while running :
     for event in pygame.event.get():
@@ -138,17 +170,30 @@ while running :
         ball.draw(screen)
         if paddle.x > 400 or paddle.x < 400:
             ball_moving = True
-        
-        if ball_moving:
-            ball.update(paddle)
-            ball.draw(screen)
+        if not game_over:
+            if ball_moving:
+                ball.update(paddle)
+                ball.draw(screen)
         
         if ball.check_collision_with_bricks(bricks):
-            print("im here")
             remaining_bricks -=1
 
         draw_counters()
+        draw_lives()
+        if ball.losing_life():
+            remaining_lives -=1
+            if not handle_life_loss():
+                game_over = True
 
+        if game_over: 
+            draw_game_over(screen)
+            Restart = button(400,550, "Restart")
+            if Restart.draw_button():
+                current_screen = "menu" 
+                reset_game()  
+                 
+
+        
 
     pygame.display.flip()
 
