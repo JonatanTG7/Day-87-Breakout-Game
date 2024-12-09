@@ -8,6 +8,7 @@ class Brick:
         self.rect = pygame.Rect(x, y, width, height)
         self.alive = True  
 
+    #draw the bricks 
     def draw(self, screen):
         if self.alive:
             pygame.draw.rect(screen, YELLOW, self.rect)  
